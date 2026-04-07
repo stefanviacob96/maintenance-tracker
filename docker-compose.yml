@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    container_name: personal-maintenance-tracker
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./database:/app/database
+    restart: unless-stopped
