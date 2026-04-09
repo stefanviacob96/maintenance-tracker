@@ -1,8 +1,4 @@
-DROP TABLE IF EXISTS maintenance_logs;
-DROP TABLE IF EXISTS tasks;
-DROP TABLE IF EXISTS assets;
-
-CREATE TABLE assets (
+CREATE TABLE IF NOT EXISTS assets (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     category TEXT NOT NULL,
@@ -11,7 +7,7 @@ CREATE TABLE assets (
     created_at TEXT NOT NULL
 );
 
-CREATE TABLE tasks (
+CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     asset_id INTEGER NOT NULL,
     title TEXT NOT NULL,
@@ -23,7 +19,7 @@ CREATE TABLE tasks (
     FOREIGN KEY (asset_id) REFERENCES assets (id)
 );
 
-CREATE TABLE maintenance_logs (
+CREATE TABLE IF NOT EXISTS maintenance_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     task_id INTEGER NOT NULL,
     completed_at TEXT NOT NULL,
