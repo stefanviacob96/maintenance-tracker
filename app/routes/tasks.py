@@ -12,31 +12,33 @@ def get_tasks():
     asset_id = request.args.get("asset_id")
 
     conn = get_db_connection()
+    with conn.cursor() as cur:
+        if asset_id:
+            cur.execute(
+                """
+                SELECT id, asset_id, title, description, frequency_days,
+                       last_done_date, next_due_date, created_at
+                FROM tasks
+                WHERE asset_id = %s
+                ORDER BY id ASC
+                """,
+                (asset_id,),
+            )
+        else:
+            cur.execute(
+                """
+                SELECT id, asset_id, title, description, frequency_days,
+                       last_done_date, next_due_date, created_at
+                FROM tasks
+                ORDER BY id ASC
+                """
+            )
 
-    if asset_id:
-        rows = conn.execute(
-            """
-            SELECT id, asset_id, title, description, frequency_days,
-                   last_done_date, next_due_date, created_at
-            FROM tasks
-            WHERE asset_id = ?
-            ORDER BY id ASC
-            """,
-            (asset_id,),
-        ).fetchall()
-    else:
-        rows = conn.execute(
-            """
-            SELECT id, asset_id, title, description, frequency_days,
-                   last_done_date, next_due_date, created_at
-            FROM tasks
-            ORDER BY id ASC
-            """
-        ).fetchall()
-
+        rows = cur.fetchall()
+        columns = [desc[0] for desc in cur.description]
     conn.close()
 
-    tasks = [dict(row) for row in rows]
+    tasks = [dict(zip(columns, row)) for row in rows]
     return jsonify({"tasks": tasks}), 200
 
 
@@ -56,45 +58,40 @@ def create_task():
         }), 400
 
     conn = get_db_connection()
-
-    asset = conn.execute(
-        """
-        SELECT id FROM assets WHERE id = ?
-        """,
-        (asset_id,),
-    ).fetchone()
-
-    if asset is None:
-        conn.close()
-        return jsonify({"error": "Asset not found"}), 404
-
-    cursor = conn.execute(
-        """
-        INSERT INTO tasks (
-            asset_id, title, description, frequency_days,
-            last_done_date, next_due_date, created_at
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT id
+            FROM assets
+            WHERE id = %s
+            """,
+            (asset_id,),
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        """,
-        (asset_id, title, description, frequency_days, None, None, created_at),
-    )
+        asset = cur.fetchone()
+
+        if asset is None:
+            conn.close()
+            return jsonify({"error": "Asset not found"}), 404
+
+        cur.execute(
+            """
+            INSERT INTO tasks (
+                asset_id, title, description, frequency_days,
+                last_done_date, next_due_date, created_at
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            RETURNING id, asset_id, title, description, frequency_days,
+                      last_done_date, next_due_date, created_at
+            """,
+            (asset_id, title, description, frequency_days, None, None, created_at),
+        )
+        row = cur.fetchone()
+        columns = [desc[0] for desc in cur.description]
+
     conn.commit()
-
-    new_id = cursor.lastrowid
-
-    row = conn.execute(
-        """
-        SELECT id, asset_id, title, description, frequency_days,
-               last_done_date, next_due_date, created_at
-        FROM tasks
-        WHERE id = ?
-        """,
-        (new_id,),
-    ).fetchone()
-
     conn.close()
 
-    return jsonify(dict(row)), 201
+    return jsonify(dict(zip(columns, row))), 201
 
 
 @tasks_bp.post("/tasks/<int:task_id>/complete")
@@ -113,55 +110,59 @@ def complete_task(task_id):
         return jsonify({"error": "Field 'completed_at' must be in YYYY-MM-DD format"}), 400
 
     conn = get_db_connection()
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT id, asset_id, title, description, frequency_days,
+                   last_done_date, next_due_date, created_at
+            FROM tasks
+            WHERE id = %s
+            """,
+            (task_id,),
+        )
+        task = cur.fetchone()
+        task_columns = [desc[0] for desc in cur.description] if cur.description else []
 
-    task = conn.execute(
-        """
-        SELECT id, asset_id, title, description, frequency_days,
-               last_done_date, next_due_date, created_at
-        FROM tasks
-        WHERE id = ?
-        """,
-        (task_id,),
-    ).fetchone()
+        if task is None:
+            conn.close()
+            return jsonify({"error": "Task not found"}), 404
 
-    if task is None:
-        conn.close()
-        return jsonify({"error": "Task not found"}), 404
+        task_dict = dict(zip(task_columns, task))
+        next_due_date = calculate_next_due_date(completed_at, task_dict["frequency_days"])
 
-    next_due_date = calculate_next_due_date(completed_at, task["frequency_days"])
+        cur.execute(
+            """
+            INSERT INTO maintenance_logs (task_id, completed_at, notes)
+            VALUES (%s, %s, %s)
+            """,
+            (task_id, completed_at, notes),
+        )
 
-    conn.execute(
-        """
-        INSERT INTO maintenance_logs (task_id, completed_at, notes)
-        VALUES (?, ?, ?)
-        """,
-        (task_id, completed_at, notes),
-    )
+        cur.execute(
+            """
+            UPDATE tasks
+            SET last_done_date = %s, next_due_date = %s
+            WHERE id = %s
+            """,
+            (completed_at, next_due_date, task_id),
+        )
 
-    conn.execute(
-        """
-        UPDATE tasks
-        SET last_done_date = ?, next_due_date = ?
-        WHERE id = ?
-        """,
-        (completed_at, next_due_date, task_id),
-    )
+        cur.execute(
+            """
+            SELECT id, asset_id, title, description, frequency_days,
+                   last_done_date, next_due_date, created_at
+            FROM tasks
+            WHERE id = %s
+            """,
+            (task_id,),
+        )
+        updated_task = cur.fetchone()
+        updated_columns = [desc[0] for desc in cur.description]
 
     conn.commit()
-
-    updated_task = conn.execute(
-        """
-        SELECT id, asset_id, title, description, frequency_days,
-               last_done_date, next_due_date, created_at
-        FROM tasks
-        WHERE id = ?
-        """,
-        (task_id,),
-    ).fetchone()
-
     conn.close()
 
     return jsonify({
         "message": "Task marked as completed",
-        "task": dict(updated_task)
+        "task": dict(zip(updated_columns, updated_task))
     }), 200

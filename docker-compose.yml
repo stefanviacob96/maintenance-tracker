@@ -1,9 +1,31 @@
 services:
+  db:
+    image: postgres:15
+    container_name: personal-tracker-db
+    environment:
+      - POSTGRES_DB=tracker
+      - POSTGRES_USER=tracker
+      - POSTGRES_PASSWORD=tracker
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
   app:
     build: .
     container_name: personal-maintenance-tracker
+    environment:
+      - DB_TYPE=postgres
+      - PG_HOST=db
+      - PG_PORT=5432
+      - PG_DB=tracker
+      - PG_USER=tracker
+      - PG_PASSWORD=tracker
     ports:
       - "5000:5000"
-    volumes:
-      - ./database:/app/database
+    depends_on:
+      - db
     restart: unless-stopped
+
+volumes:
+  pgdata:
