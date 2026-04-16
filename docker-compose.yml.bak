@@ -12,7 +12,7 @@ services:
       - "5432:5432"
 
   app:
-    image: iacobstev/personal-tracker-app:${IMAGE_TAG}
+    build: .
     container_name: personal-maintenance-tracker
     environment:
       - DB_TYPE=postgres
