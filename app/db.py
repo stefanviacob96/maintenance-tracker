@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import time
 from pathlib import Path
 
 import psycopg
@@ -17,6 +18,9 @@ PG_PORT = os.getenv("PG_PORT", "5432")
 PG_DB = os.getenv("PG_DB", "tracker")
 PG_USER = os.getenv("PG_USER", "tracker")
 PG_PASSWORD = os.getenv("PG_PASSWORD", "tracker")
+
+DB_CONNECT_RETRIES = int(os.getenv("DB_CONNECT_RETRIES", "10"))
+DB_CONNECT_DELAY = int(os.getenv("DB_CONNECT_DELAY", "3"))
 
 
 def get_db_connection():
@@ -37,6 +41,25 @@ def get_db_connection():
     raise NotImplementedError(f"Unsupported DB_TYPE: {DB_TYPE}")
 
 
+def wait_for_db():
+    if DB_TYPE != "postgres":
+        return
+
+    last_error = None
+
+    for attempt in range(1, DB_CONNECT_RETRIES + 1):
+        try:
+            conn = get_db_connection()
+            conn.close()
+            return
+        except psycopg.OperationalError as error:
+            last_error = error
+            print(f"Database not ready yet (attempt {attempt}/{DB_CONNECT_RETRIES}): {error}")
+            time.sleep(DB_CONNECT_DELAY)
+
+    raise last_error
+
+
 def init_db():
     if DB_TYPE == "sqlite":
         DB_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -48,6 +71,7 @@ def init_db():
         return
 
     if DB_TYPE == "postgres":
+        wait_for_db()
         conn = get_db_connection()
         with open(SCHEMA_PATH, "r") as f:
             schema_sql = f.read()
