@@ -1,11 +1,14 @@
 from flask import Flask, jsonify
 
+from flask_cors import CORS
+
 from app.db import init_db
 from app.routes.assets import assets_bp
 from app.routes.tasks import tasks_bp
 from app.routes.logs import logs_bp
 
 app = Flask(__name__)
+CORS(app)
 
 init_db()
 

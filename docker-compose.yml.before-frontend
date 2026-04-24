@@ -27,16 +27,5 @@ services:
       - db
     restart: unless-stopped
 
-  frontend:
-    build: ./frontend
-    container_name: personal-tracker-frontend
-    ports:
-      - "8080:80"
-    environment:
-      API_URL: http://localhost:5000
-    depends_on:
-      - app
-    restart: unless-stopped
-
 volumes:
   pgdata:

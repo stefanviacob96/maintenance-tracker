@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Personal Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Personal Maintenance Tracker</h1>
+
+    <h2>Assets</h2>
+    <button onclick="loadAssets()">Load Assets</button>
+    <ul id="assets-list"></ul>
+
+    <h2>Tasks</h2>
+    <button onclick="loadTasks()">Load Tasks</button>
+    <ul id="tasks-list"></ul> 
+   
+    <h2>Create Task</h2>
+    <input id="asset_id" placeholder="Asset ID">
+    <input id="title" placeholder="Title">
+    <input id="frequency" placeholder="Frequency days">
+    <button onclick="createTask()">Create</button>
+
+    <h2>Complete Task</h2>
+    <input id="task_id" placeholder="Task ID">
+    <input id="date" placeholder="YYYY-MM-DD">
+    <button onclick="completeTask()">Complete</button>
+
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
