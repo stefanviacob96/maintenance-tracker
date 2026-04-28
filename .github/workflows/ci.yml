@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Start app and database
-        run: docker compose up -d --build db app
+        run: IMAGE_TAG=ci docker compose up -d --build db app
 
       - name: Wait for app
         run: sleep 15
