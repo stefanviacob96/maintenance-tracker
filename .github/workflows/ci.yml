@@ -17,13 +17,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: docker build -t personal-maintenance-tracker .
+      - name: Start app and database
+        run: docker compose up -d --build db app
 
-      - name: Run container
-        run: |
-          docker run -d --name personal-tracker-test -p 5000:5000 personal-maintenance-tracker
-          sleep 5
+      - name: Wait for app
+        run: sleep 15
 
       - name: Test health endpoint
         run: curl --fail http://localhost:5000/health
@@ -36,12 +34,8 @@ jobs:
 
       - name: Show container logs if failure
         if: failure()
-        run: docker logs personal-tracker-test
+        run: docker compose logs
 
-      - name: Stop container
+      - name: Cleanup
         if: always()
-        run: docker stop personal-tracker-test
-
-      - name: Remove container
-        if: always()
-        run: docker rm personal-tracker-test
+        run: docker compose down -v
