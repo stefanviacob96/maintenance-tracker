@@ -26,3 +26,16 @@ CREATE TABLE IF NOT EXISTS maintenance_logs (
     notes TEXT,
     FOREIGN KEY (task_id) REFERENCES tasks (id)
 );
+
+CREATE TABLE IF NOT EXISTS jobs (
+    id SERIAL PRIMARY KEY,
+    task_id TEXT NOT NULL UNIQUE,
+    script_name TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'PENDING',
+    result TEXT,
+    parsed JSONB,
+    raw_output TEXT,
+    error TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

@@ -7,16 +7,11 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app ./app
-COPY scripts ./scripts
-COPY schema.sql .
+COPY . .
 
+RUN useradd -m workeruser
+USER workeruser
 
-RUN mkdir -p /app/database
-
-EXPOSE 5000
-
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app.app:app"]
+CMD ["celery", "-A", "app.celery_app.celery_app", "worker", "--loglevel=info"]

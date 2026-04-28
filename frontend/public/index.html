@@ -29,5 +29,22 @@
 
     <script src="config.js"></script>
     <script src="app.js"></script>
+
+    <h2>Run System Check</h2>
+
+    <select id="script-select">
+      <option value="memory_check">Memory</option>
+      <option value="disk_check">Disk</option>
+      <option value="cpu_check">CPU</option>
+    </select>
+
+   <button onclick="runCheck()">Run Check</button>
+
+   <div id="job-result"></div>
+
+    <h2>Job History</h2>
+    <button onclick="loadJobHistory()">Refresh History</button>
+    <div id="job-history"></div>
+
 </body>
 </html>
