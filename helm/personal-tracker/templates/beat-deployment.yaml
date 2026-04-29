@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.beat.name }}
+spec:
+  replicas: {{ .Values.beat.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.beat.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.beat.name }}
+    spec:
+      containers:
+        - name: beat
+          image: "{{ .Values.beat.image.repository }}:{{ .Values.beat.image.tag }}"
+          command: {{ .Values.beat.command | toJson }}
+          args: {{ .Values.beat.args | toJson }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMap.name }}
+            - secretRef:
+                name: {{ .Values.secret.name }}
