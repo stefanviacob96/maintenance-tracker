@@ -1,5 +1,5 @@
 app:
-  name: personal-tracker-app
+  name: maintenance-tracker-app
   replicas: 2
 
 image:
@@ -14,7 +14,7 @@ service:
 
 ingress:
   enabled: true
-  name: personal-tracker-ingress
+  name: maintenance-tracker-ingress
   className: traefik
   host: tracker.local
   path: /
@@ -49,7 +49,7 @@ resources:
     memory: "256Mi"
 
 worker:
-  name: personal-tracker-worker
+  name: maintenance-tracker-worker
   replicas: 1
   image:
     repository: iacobstev/maintenance-tracker-app
@@ -66,7 +66,7 @@ worker:
     CELERY_RESULT_BACKEND: "redis://maintenance-tracker-redis-master:6379/0"
 
 beat:
-  name: personal-tracker-beat
+  name: maintenance-tracker-beat
   replicas: 1
   image:
     repository: iacobstev/maintenance-tracker-app
@@ -75,7 +75,7 @@ beat:
   args: ["-A", "app.celery_app.celery_app", "beat", "--loglevel=info"]
 
 frontend:
-  name: personal-tracker-frontend
+  name: maintenance-tracker-frontend
   replicas: 1
   image:
     repository: iacobstev/maintenance-tracker-frontend
@@ -90,7 +90,7 @@ frontend:
 
   configMap:
     name: frontend-config
-    apiUrl: "http://personal-tracker-app:5000"
+    apiUrl: "http://maintenance-tracker-app:5000"
 
 redis:
   architecture: standalone
