@@ -1,6 +1,6 @@
 app:
   name: personal-tracker-app
-  replicas: 3
+  replicas: 2
 
 image:
   repository: iacobstev/personal-tracker-app
