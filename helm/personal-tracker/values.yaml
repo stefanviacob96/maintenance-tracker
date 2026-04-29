@@ -79,7 +79,7 @@ frontend:
   replicas: 1
   image:
     repository: iacobstev/maintenance-tracker-frontend
-    tag: v1
+    tag: e3127995b187e4084e9734ddb4201dc9270fb60b
   containerPort: 80
 
   service:
