@@ -62,15 +62,15 @@ worker:
     PG_USER: "postgres"
     PG_PASSWORD: "postgres"
     PG_DB: "personal_tracker"
-    CELERY_BROKER_URL: "redis://personal-tracker-redis-master:6379/0"
-    CELERY_RESULT_BACKEND: "redis://personal-tracker-redis-master:6379/0"
+    CELERY_BROKER_URL: "redis://maintenance-tracker-redis-master:6379/0"
+    CELERY_RESULT_BACKEND: "redis://maintenance-tracker-redis-master:6379/0"
 
 beat:
   name: personal-tracker-beat
   replicas: 1
   image:
     repository: iacobstev/maintenance-tracker-app
-    tag: v4
+    tag: latest
   command: ["celery"]
   args: ["-A", "app.celery_app.celery_app", "beat", "--loglevel=info"]
 
@@ -117,6 +117,6 @@ appConfig:
     DB_CONNECT_RETRIES: "10"
     DB_TYPE: "postgres"
     PG_DB: "tracker"
-    PG_HOST: "personal-tracker-postgresql"
+    PG_HOST: "maintenance-tracker-postgresql"
     PG_PORT: "5432"
     PG_USER: "tracker"
