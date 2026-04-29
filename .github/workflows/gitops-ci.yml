@@ -43,7 +43,7 @@ jobs:
           from pathlib import Path
 
           tag = "${{ env.TAG }}"
-          path = Path("helm/personal-tracker/values.yaml")
+          path = Path("helm/maintenance-tracker/values.yaml")
           text = path.read_text()
 
           text = text.replace("tag: latest", f"tag: {tag}")
@@ -56,6 +56,6 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add helm/personal-tracker/values.yaml
+          git add helm/maintenance-tracker/values.yaml
           git commit -m "update images to ${TAG}" || echo "no changes"
           git push
