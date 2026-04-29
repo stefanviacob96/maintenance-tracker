@@ -61,7 +61,7 @@ worker:
     PG_HOST: "postgres"
     PG_USER: "postgres"
     PG_PASSWORD: "postgres"
-    PG_DB: "personal_tracker"
+    PG_DB: "maintenance_tracker"
     CELERY_BROKER_URL: "redis://maintenance-tracker-redis-master:6379/0"
     CELERY_RESULT_BACKEND: "redis://maintenance-tracker-redis-master:6379/0"
 
