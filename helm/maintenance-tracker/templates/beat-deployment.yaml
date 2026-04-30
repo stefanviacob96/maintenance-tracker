@@ -25,6 +25,13 @@ spec:
                 - ALL
           command: {{ .Values.beat.command | toJson }}
           args: {{ .Values.beat.args | toJson }}
+          resources:
+            requests:
+              cpu: {{ .Values.beatResources.requests.cpu }}
+              memory: {{ .Values.beatResources.requests.memory }}
+            limits:
+              cpu: {{ .Values.beatResources.limits.cpu }}
+              memory: {{ .Values.beatResources.limits.memory }}
           envFrom:
             - configMapRef:
                 name: {{ .Values.configMap.name }}

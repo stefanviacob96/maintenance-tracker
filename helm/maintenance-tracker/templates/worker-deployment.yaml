@@ -25,6 +25,13 @@ spec:
                 - ALL
           command: {{ .Values.worker.command | toJson }}
           args: {{ .Values.worker.args | toJson }}
+          resources:
+            requests:
+              cpu: {{ .Values.workerResources.requests.cpu }}
+              memory: {{ .Values.workerResources.requests.memory }}
+            limits:
+              cpu: {{ .Values.workerResources.limits.cpu }}
+              memory: {{ .Values.workerResources.limits.memory }}
 
           env:
             # 1. TOATE variabilele din values.yaml, EXCEPT PG_PASSWORD
