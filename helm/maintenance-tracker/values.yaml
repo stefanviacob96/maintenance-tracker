@@ -4,7 +4,7 @@ app:
 
 image:
   repository: iacobstev/maintenance-tracker-app
-  tag: f1df229d8cacb6e17e642e6d60b9c8088cb690ff
+  tag: b663c00faa52c1158941456dccab590e6028085b
   pullPolicy: Always
 
 service:
@@ -53,7 +53,7 @@ worker:
   replicas: 1
   image:
     repository: iacobstev/maintenance-tracker-app
-    tag: f1df229d8cacb6e17e642e6d60b9c8088cb690ff
+    tag: b663c00faa52c1158941456dccab590e6028085b
   command: ["celery"]
   args: ["-A", "app.celery_app.celery_app", "worker", "--loglevel=info"]
   env:
@@ -69,7 +69,7 @@ beat:
   replicas: 1
   image:
     repository: iacobstev/maintenance-tracker-app
-    tag: f1df229d8cacb6e17e642e6d60b9c8088cb690ff
+    tag: b663c00faa52c1158941456dccab590e6028085b
   command: ["celery"]
   args: ["-A", "app.celery_app.celery_app", "beat", "--loglevel=info", "--schedule=/tmp/celerybeat-schedule"]
 
@@ -78,7 +78,7 @@ frontend:
   replicas: 1
   image:
     repository: iacobstev/maintenance-tracker-frontend
-    tag: f1df229d8cacb6e17e642e6d60b9c8088cb690ff
+    tag: b663c00faa52c1158941456dccab590e6028085b
   containerPort: 80
   service:
     type: NodePort
