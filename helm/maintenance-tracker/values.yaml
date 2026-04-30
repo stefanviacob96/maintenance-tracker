@@ -97,6 +97,9 @@ redis:
     persistence:
       enabled: false
 
+db:
+  port: 5432
+
 postgresql:
   auth:
     username: tracker
@@ -144,3 +147,7 @@ frontendResources:
   limits:
     cpu: "200m"
     memory: "128Mi"
+
+securityContext:
+  runAsUser: 10001
+  runAsGroup: 10001

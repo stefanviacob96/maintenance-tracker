@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Values.beat.name }}
 spec:
+  revisionHistoryLimit: 2
   replicas: {{ .Values.beat.replicas }}
   selector:
     matchLabels:
@@ -17,8 +18,8 @@ spec:
           image: "{{ .Values.beat.image.repository }}:{{ .Values.beat.image.tag }}"
           securityContext:
             runAsNonRoot: true
-            runAsUser: 10001
-            runAsGroup: 10001
+            runAsUser: {{ .Values.securityContext.runAsUser }}
+            runAsGroup: {{ .Values.securityContext.runAsGroup }}
             allowPrivilegeEscalation: false
             capabilities:
               drop:

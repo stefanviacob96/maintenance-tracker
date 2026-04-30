@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Values.worker.name }}
 spec:
+  revisionHistoryLimit: 2
   replicas: {{ .Values.worker.replicas }}
   selector:
     matchLabels:
@@ -17,8 +18,8 @@ spec:
           image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
           securityContext:
             runAsNonRoot: true
-            runAsUser: 10001
-            runAsGroup: 10001
+            runAsUser: {{ .Values.securityContext.runAsUser }}
+            runAsGroup: {{ .Values.securityContext.runAsGroup }}
             allowPrivilegeEscalation: false
             capabilities:
               drop:
@@ -32,19 +33,15 @@ spec:
             limits:
               cpu: {{ .Values.workerResources.limits.cpu }}
               memory: {{ .Values.workerResources.limits.memory }}
-
           env:
-            # 1. TOATE variabilele din values.yaml, EXCEPT PG_PASSWORD
             {{- range $key, $value := .Values.worker.env }}
             {{- if ne $key "PG_PASSWORD" }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
             {{- end }}
-
-            # 2. PG_PASSWORD vine din Secret
             - name: PG_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: app-secret
-                  key: PG_PASSWORD
+                  name: {{ .Values.secret.name }}
+                  key: {{ .Values.secret.pgPasswordKey }}
