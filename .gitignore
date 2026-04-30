@@ -29,3 +29,6 @@ app/services/__pycache__/
 # Sensitive keys
 *.pem
 *.key
+
+# Local cleanup backups
+backups/
