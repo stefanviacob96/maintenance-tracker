@@ -17,8 +17,19 @@ spec:
           image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
           command: {{ .Values.worker.command | toJson }}
           args: {{ .Values.worker.args | toJson }}
+
           env:
+            # 1. TOATE variabilele din values.yaml, EXCEPT PG_PASSWORD
             {{- range $key, $value := .Values.worker.env }}
+            {{- if ne $key "PG_PASSWORD" }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+            {{- end }}
+
+            # 2. PG_PASSWORD vine din Secret
+            - name: PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: PG_PASSWORD
