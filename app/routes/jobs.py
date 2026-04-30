@@ -7,7 +7,7 @@ from app.tasks import run_script
 from app.services.job_history_service import create_job as save_job
 
 jobs_bp = Blueprint("jobs", __name__)
-logger = logging.getLogger("personal-tracker-jobs")
+logger = logging.getLogger("maintenance-tracker-jobs")
 
 
 @jobs_bp.route("/jobs", methods=["POST"])

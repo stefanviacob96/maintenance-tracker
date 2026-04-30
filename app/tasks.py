@@ -3,7 +3,7 @@ import subprocess
 from app.celery_app import celery_app
 from app.services.job_history_service import update_job
 
-logger = logging.getLogger("personal-tracker-worker")
+logger = logging.getLogger("maintenance-tracker-worker")
 
 ALLOWED_SCRIPTS = {
     "memory_check": "scripts/system/memory-alert-check.sh",

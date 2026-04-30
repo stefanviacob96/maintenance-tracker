@@ -24,7 +24,7 @@ variable "ssh_allowed_cidr" {
 }
 
 variable "app_port" {
-  description = "Port exposed by the Personal Tracker app"
+  description = "Port exposed by the Maintenance Tracker app"
   type        = number
 }
 

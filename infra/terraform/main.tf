@@ -1,4 +1,4 @@
-resource "aws_security_group" "personal_tracker_sg" {
+resource "aws_security_group" "maintenance_tracker_sg" {
   name        = "${var.project_name}-${var.environment}-sg"
   description = "Security group for Personal Maintenance Tracker"
   tags = {
@@ -16,7 +16,7 @@ resource "aws_security_group" "personal_tracker_sg" {
   }
 
   ingress {
-    description = "Allow Personal Tracker app"
+    description = "Allow Maintenance Tracker app"
     from_port   = var.app_port
     to_port     = var.app_port
     protocol    = "tcp"
@@ -32,11 +32,11 @@ resource "aws_security_group" "personal_tracker_sg" {
   }
 }
 
-resource "aws_instance" "personal_tracker_server" {
+resource "aws_instance" "maintenance_tracker_server" {
   ami                    = "ami-02003f9f0fde924ea"
   instance_type          = var.instance_type
   key_name               = var.key_name
-  vpc_security_group_ids = [aws_security_group.personal_tracker_sg.id]
+  vpc_security_group_ids = [aws_security_group.maintenance_tracker_sg.id]
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-server"

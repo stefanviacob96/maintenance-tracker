@@ -17,7 +17,7 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s %(message)s"
 )
 
-logger = logging.getLogger("personal-tracker-api")
+logger = logging.getLogger("maintenance-tracker-api")
 
 from app.metrics import REQUEST_COUNT, REQUEST_LATENCY
 

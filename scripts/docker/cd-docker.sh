@@ -14,7 +14,7 @@ if [ -z "$1" ]; then
 fi
 
 TAG="$1"
-TARGET_IMAGE="iacobstev/personal-tracker-app:$TAG"
+TARGET_IMAGE="iacobstev/maintenance-tracker-app:$TAG"
 
 echo "Deploying Docker Compose with IMAGE_TAG=$TAG"
 

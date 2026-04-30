@@ -2,10 +2,10 @@
 set -e
 
 IMAGE_NAME="personal-maintenance-tracker"
-DOCKERHUB_IMAGE="iacobstev/personal-tracker-app"
-APP_CONTAINER="personal-tracker-test"
-DB_CONTAINER="personal-tracker-db"
-NETWORK_NAME="personal-tracker-test-net"
+DOCKERHUB_IMAGE="iacobstev/maintenance-tracker-app"
+APP_CONTAINER="maintenance-tracker-test"
+DB_CONTAINER="maintenance-tracker-db"
+NETWORK_NAME="maintenance-tracker-test-net"
 
 if [ -z "$1" ]; then
   echo "Usage: $0 <tag>"

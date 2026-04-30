@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:15
-    container_name: personal-tracker-db
+    container_name: maintenance-tracker-db
     environment:
       - POSTGRES_DB=tracker
       - POSTGRES_USER=tracker
@@ -13,15 +13,15 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: personal-tracker-redis
+    container_name: maintenance-tracker-redis
     ports:
       - "6379:6379"
     restart: unless-stopped
 
   app:
     build: .
-    image: iacobstev/personal-tracker-app:${IMAGE_TAG}
-    container_name: personal-maintenance-tracker
+    image: iacobstev/maintenance-tracker-app:${IMAGE_TAG}
+    container_name: maintenance-tracker-app
     environment:
       - DB_TYPE=postgres
       - PG_HOST=db
@@ -37,7 +37,7 @@ services:
 
   frontend:
     build: ./frontend
-    container_name: personal-tracker-frontend
+    container_name: maintenance-tracker-frontend
     ports:
       - "8080:80"
     environment:
@@ -50,7 +50,7 @@ services:
     build:
       context: .
       dockerfile: worker/Dockerfile
-    container_name: personal-tracker-worker
+    container_name: maintenance-tracker-worker
     environment:
         - REDIS_URL=redis://redis:6379/0
         - DB_TYPE=postgres
@@ -67,7 +67,7 @@ services:
     build:
       context: .
       dockerfile: worker/Dockerfile
-    container_name: personal-tracker-beat
+    container_name: maintenance-tracker-beat
     command: celery -A app.celery_app.celery_app beat --loglevel=info --schedule=/tmp/celerybeat-schedule
     environment:
       - REDIS_URL=redis://redis:6379/0

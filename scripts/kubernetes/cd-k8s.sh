@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-DOCKERHUB_IMAGE="iacobstev/personal-tracker-app"
-K8S_DEPLOYMENT="personal-tracker-app"
+DOCKERHUB_IMAGE="iacobstev/maintenance-tracker-app"
+K8S_DEPLOYMENT="maintenance-tracker-app"
 K8S_NAMESPACE="default"
 NODEPORT_URL="http://localhost:31585/health"
 HEALTH_RETRIES=10
