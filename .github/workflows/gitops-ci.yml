@@ -46,10 +46,17 @@ jobs:
           path = Path("helm/maintenance-tracker/values.yaml")
           text = path.read_text()
 
-          text = text.replace("tag: latest", f"tag: {tag}")
-          text = text.replace("tag: v1", f"tag: {tag}")
+          lines = text.splitlines()
+          updated = []
 
-          path.write_text(text)
+          for line in lines:
+              if line.strip().startswith("tag:"):
+                  indent = line[:len(line) - len(line.lstrip())]
+                  updated.append(f"{indent}tag: {tag}")
+              else:
+                  updated.append(line)
+
+          path.write_text("\n".join(updated) + "\n")
           PY
 
       - name: Commit and push
