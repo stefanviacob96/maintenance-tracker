@@ -15,6 +15,14 @@ spec:
       containers:
         - name: beat
           image: "{{ .Values.beat.image.repository }}:{{ .Values.beat.image.tag }}"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           command: {{ .Values.beat.command | toJson }}
           args: {{ .Values.beat.args | toJson }}
           envFrom:

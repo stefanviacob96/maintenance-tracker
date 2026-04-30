@@ -58,10 +58,9 @@ worker:
   args: ["-A", "app.celery_app.celery_app", "worker", "--loglevel=info"]
   env:
     DB_TYPE: "postgres"
-    PG_HOST: "postgres"
-    PG_USER: "postgres"
-    PG_PASSWORD: "postgres"
-    PG_DB: "maintenance_tracker"
+    PG_HOST: "maintenance-tracker-postgresql"
+    PG_USER: "tracker"
+    PG_DB: "tracker"
     CELERY_BROKER_URL: "redis://maintenance-tracker-redis-master:6379/0"
     CELERY_RESULT_BACKEND: "redis://maintenance-tracker-redis-master:6379/0"
 
@@ -72,7 +71,7 @@ beat:
     repository: iacobstev/maintenance-tracker-app
     tag: d9b2d39f24da5cab091f61e0413d396c23eb0562
   command: ["celery"]
-  args: ["-A", "app.celery_app.celery_app", "beat", "--loglevel=info"]
+  args: ["-A", "app.celery_app.celery_app", "beat", "--loglevel=info", "--schedule=/tmp/celerybeat-schedule"]
 
 frontend:
   name: maintenance-tracker-frontend
@@ -81,13 +80,11 @@ frontend:
     repository: iacobstev/maintenance-tracker-frontend
     tag: d9b2d39f24da5cab091f61e0413d396c23eb0562
   containerPort: 80
-
   service:
     type: NodePort
     port: 80
     targetPort: 80
     nodePort: 30080
-
   configMap:
     name: frontend-config
     apiUrl: "http://maintenance-tracker-app:5000"
@@ -103,7 +100,10 @@ redis:
 postgresql:
   auth:
     username: tracker
-    password: tracker
+    existingSecret: app-secret
+    secretKeys:
+      userPasswordKey: PG_PASSWORD
+      adminPasswordKey: POSTGRES_PASSWORD
     database: tracker
   primary:
     persistence:

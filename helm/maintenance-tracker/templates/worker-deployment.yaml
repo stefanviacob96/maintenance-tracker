@@ -15,6 +15,14 @@ spec:
       containers:
         - name: worker
           image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           command: {{ .Values.worker.command | toJson }}
           args: {{ .Values.worker.args | toJson }}
 
