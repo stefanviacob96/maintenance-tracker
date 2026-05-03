@@ -4,9 +4,32 @@
 
 Full-stack application used to explore DevOps concepts across backend, workers, containers, Kubernetes, and monitoring.
 
-Flow:  
-frontend → API → Redis queue → worker → PostgreSQL → frontend
+## System Flow
 
+```mermaid
+graph TD
+
+    FE[Frontend - Nginx]
+    API[Flask API]
+    REDIS[Redis]
+    WORKER[Celery Worker]
+    DB[(PostgreSQL)]
+    PROM[Prometheus]
+    GRAF[Grafana]
+
+    FE --> API
+    API --> DB
+    API --> REDIS
+    REDIS --> WORKER
+    WORKER --> DB
+
+    PROM --> API
+    PROM --> WORKER
+    PROM --> DB
+    PROM --> REDIS
+
+    PROM --> GRAF
+```
 ---
 
 ## Tech Stack
@@ -64,33 +87,21 @@ frontend → API → Redis queue → worker → PostgreSQL → frontend
 ## Deployment Modes
 
 ### Docker (local)
-
+```bash
 docker compose up --build
-
+```
 ---
 
 ### Kubernetes / Helm
 
 Deployment is managed via Helm.
-
+```bash
 helm upgrade --install maintenance-tracker ./helm/maintenance-tracker
-
+```
 Legacy Kubernetes manifests are kept for reference:
-
+```bash
 backups/stage9-legacy-k8s/k8s/
-
----
-
-## Project Structure (simplified)
-
-- app/ – backend logic (routes, services, tasks)
-- frontend/ – static UI + nginx config
-- worker/ – worker container
-- helm/ – Helm chart
-- infra/terraform/ – infrastructure provisioning
-- scripts/ – system, docker, network checks
-- runtime-logs/ – script outputs
-
+```
 ---
 
 ## Lessons Learned
